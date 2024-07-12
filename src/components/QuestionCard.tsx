@@ -4,8 +4,8 @@ import { motion } from "framer-motion";
 
 interface QuestionCardProp {
   question: IQuestion;
-  onSelectAnswer: any;
-  onNextQuestion: any;
+  onSelectAnswer(questionId: number, name: string): void;
+  onNextQuestion(): void;
   isLastQuestion: boolean;
 }
 
@@ -16,9 +16,13 @@ const QuestionCard: React.FC<QuestionCardProp> = ({
 }) => {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
 
-  const handleSelectAnswer = (answerId: number) => () => {
+  const handleSelectAnswer = (answerId: number, name: string) => () => {
     setSelectedAnswer(answerId);
-    onSelectAnswer(question.id, answerId);
+    onSelectAnswer(question.id, name);
+  };
+
+  const handleNext = () => {
+    if (selectedAnswer) onNextQuestion();
   };
 
   return (
@@ -29,7 +33,7 @@ const QuestionCard: React.FC<QuestionCardProp> = ({
             {question.question}
           </div>
           <div className="space-y-4">
-            {question.options.map(({ id, text }) => (
+            {question.options.map(({ id, text, name }) => (
               <div
                 key={id}
                 className="bg-indigo-500 rounded-full px-6 py-3 text-white text-lg flex items-center justify-between"
@@ -37,9 +41,9 @@ const QuestionCard: React.FC<QuestionCardProp> = ({
                 <label htmlFor={`${id}`}>{text}</label>
                 <input
                   id={`${id}`}
-                  type="checkbox"
+                  type="radio"
                   checked={selectedAnswer === id}
-                  onClick={handleSelectAnswer(id)}
+                  onChange={handleSelectAnswer(id, name)}
                 />
               </div>
             ))}
@@ -49,7 +53,7 @@ const QuestionCard: React.FC<QuestionCardProp> = ({
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
-            onClick={onNextQuestion}
+            onClick={handleNext}
           >
             Next Question
           </motion.div>

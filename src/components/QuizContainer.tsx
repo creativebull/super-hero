@@ -3,14 +3,15 @@ import QuestionCard from "./QuestionCard";
 import ResultDisplay from "./ResultDisplay";
 import { motion } from "framer-motion";
 
-interface IUserAnswer {
+export interface IUserAnswer {
   questionId: number;
-  answerId: number;
+  name: string;
 }
 
 interface IOption {
   id: number;
   text: string;
+  name: string;
 }
 
 export interface IQuestion {
@@ -31,21 +32,42 @@ const QuizContainer = () => {
         id: 1,
         question: "Which of these qualities is most important to you?",
         options: [
-          { id: 1, text: "Unwavering moral compass and commitment to justice" },
-          { id: 2, text: "Brilliant mind and technological prowess" },
-          { id: 3, text: "Stealth, strategy, and detective skills" },
+          {
+            id: 1,
+            text: "Unwavering moral compass and commitment to justice",
+            name: "Superman",
+          },
+          {
+            id: 2,
+            text: "Brilliant mind and technological prowess",
+            name: "Batman",
+          },
+          {
+            id: 3,
+            text: "Stealth, strategy, and detective skills",
+            name: "Iron Man",
+          },
         ],
       },
       {
         id: 2,
         question: "If you had to choose a superpower, which would you prefer?",
         options: [
-          { id: 1, text: "Superhuman strength, flight, and invulnerability" },
+          {
+            id: 1,
+            text: "Superhuman strength, flight, and invulnerability",
+            name: "Superman",
+          },
           {
             id: 2,
             text: "Genius-level intellect and wealth to fund advanced technology",
+            name: "Batman",
           },
-          { id: 3, text: "Peak human physical and mental abilities" },
+          {
+            id: 3,
+            text: "Peak human physical and mental abilities",
+            name: "Iron Man",
+          },
         ],
       },
       {
@@ -55,14 +77,17 @@ const QuizContainer = () => {
           {
             id: 1,
             text: "Confront the threat head-on with your immense power",
+            name: "Superman",
           },
           {
             id: 2,
             text: "Analyze the situation and devise a strategic plan of attack",
+            name: "Batman",
           },
           {
             id: 3,
             text: "Use your high-tech gadgets and armored suit to overwhelm the enemy",
+            name: "Iron Man",
           },
         ],
       },
@@ -71,26 +96,37 @@ const QuizContainer = () => {
         question:
           "Which of these superhero alter egos would you most want to embody?",
         options: [
-          { id: 1, text: "Mild-mannered reporter Clark Kent" },
+          {
+            id: 1,
+            text: "Mild-mannered reporter Clark Kent",
+            name: "Superman",
+          },
           {
             id: 2,
             text: "Billionaire playboy Bruce Wayne",
+            name: "Batman",
           },
-          { id: 3, text: "Eccentric inventor Tony Stark" },
+          { id: 3, text: "Eccentric inventor Tony Stark", name: "Iron Man" },
         ],
       },
       {
         id: 5,
         question: "What is your preferred method of transportation?",
         options: [
-          { id: 1, text: "Soaring through the sky under your own power" },
+          {
+            id: 1,
+            text: "Soaring through the sky under your own power",
+            name: "Superman",
+          },
           {
             id: 2,
             text: "Gliding through the city in your high-tech Batmobile",
+            name: "Batman",
           },
           {
             id: 3,
             text: "Rocketing through the air in your advanced Iron Man suit",
+            name: "Iron Man",
           },
         ],
       },
@@ -112,11 +148,9 @@ const QuizContainer = () => {
     fetchQuestions();
   }, []);
 
-  const handleAnswerSelect = (questionId: number, answerId: number) => {
-    setUserAnswers((prevAnswers) => [
-      ...prevAnswers,
-      { questionId: questionId, answerId: answerId },
-    ]);
+  const handleAnswerSelect = (questionId: number, name: string) => {
+    if (!userAnswers.find((userAnswer) => userAnswer.name === name))
+      setUserAnswers((prevAnswers) => [...prevAnswers, { questionId, name }]);
   };
 
   const handleNextQuestion = () => {
@@ -128,7 +162,7 @@ const QuizContainer = () => {
   };
 
   if (quizComplete) {
-    return <ResultDisplay />;
+    return <ResultDisplay userAnswers={userAnswers} />;
   }
 
   return (
