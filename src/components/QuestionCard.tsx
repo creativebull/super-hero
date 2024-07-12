@@ -13,6 +13,7 @@ const QuestionCard: React.FC<QuestionCardProp> = ({
   question,
   onNextQuestion,
   onSelectAnswer,
+  isLastQuestion,
 }) => {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
 
@@ -55,7 +56,7 @@ const QuestionCard: React.FC<QuestionCardProp> = ({
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
             onClick={handleNext}
           >
-            Next Question
+            {isLastQuestion ? "Finish" : "Next Question"}
           </motion.div>
         </div>
       </div>
