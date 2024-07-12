@@ -1,8 +1,10 @@
+import Header from "./components/Header";
 import QuizContainer from "./components/QuizContainer";
 
 function App() {
   return (
-    <div className="container mx-auto">
+    <div className="md:container mx-auto">
+      <Header />
       <QuizContainer />
     </div>
   );
