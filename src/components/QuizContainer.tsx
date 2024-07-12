@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import QuestionCard from "./QuestionCard";
 import ResultDisplay from "./ResultDisplay";
+import { motion } from "framer-motion";
 
 interface IUserAnswer {
   questionId: number;
@@ -133,12 +134,18 @@ const QuizContainer = () => {
   return (
     <div>
       {questions.length > 0 && (
-        <QuestionCard
-          question={questions[currentQuestionIndex]}
-          onSelectAnswer={handleAnswerSelect}
-          onNextQuestion={handleNextQuestion}
-          isLastQuestion={currentQuestionIndex === questions.length - 1}
-        />
+        <motion.div
+          key={currentQuestionIndex}
+          animate={currentQuestionIndex !== 0 && { rotateY: 360 }}
+          transition={{ duration: 1 }}
+        >
+          <QuestionCard
+            question={questions[currentQuestionIndex]}
+            onSelectAnswer={handleAnswerSelect}
+            onNextQuestion={handleNextQuestion}
+            isLastQuestion={currentQuestionIndex === questions.length - 1}
+          />
+        </motion.div>
       )}
     </div>
   );
