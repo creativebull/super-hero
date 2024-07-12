@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IQuestion } from "./QuizContainer";
-import { motion } from "framer-motion";
+import { motion, useAnimationControls } from "framer-motion";
+import Fade from "./Fade";
 
 interface QuestionCardProp {
   question: IQuestion;
@@ -9,6 +10,10 @@ interface QuestionCardProp {
   isLastQuestion: boolean;
 }
 
+const delay = (ms: number): Promise<void> => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
 const QuestionCard: React.FC<QuestionCardProp> = ({
   question,
   onNextQuestion,
@@ -16,18 +21,52 @@ const QuestionCard: React.FC<QuestionCardProp> = ({
   isLastQuestion,
 }) => {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const animateControl = useAnimationControls();
+
+  useEffect(() => {
+    animateControl.set({
+      opacity: 0,
+      y: -80,
+    });
+    animateControl.start({
+      opacity: 1,
+      y: 0,
+      transition: { duration: 1 },
+    });
+  }, []);
 
   const handleSelectAnswer = (answerId: number, name: string) => () => {
     setSelectedAnswer(answerId);
     onSelectAnswer(question.id, name);
   };
 
-  const handleNext = () => {
-    if (selectedAnswer) onNextQuestion();
+  const handleNext = async () => {
+    if (selectedAnswer) {
+      animateControl.start({
+        opacity: 0,
+        x: -80,
+        transition: { duration: 1 },
+      });
+
+      await delay(1000);
+      animateControl.set({
+        opacity: 0,
+        y: -80,
+        x: 0,
+      });
+      animateControl.start({
+        opacity: 1,
+        y: 0,
+        x: 0,
+        transition: { duration: 1 },
+      });
+      onNextQuestion();
+      setSelectedAnswer(null);
+    }
   };
 
   return (
-    <>
+    <Fade animateControl={animateControl}>
       <div className="mt-[60px] flex flex-col items-center space-y-6">
         <div className="bg-indigo-500 rounded-2xl p-6 w-full max-w-2xl shadow-md">
           <div className="mb-8 text-white text-2xl font-bold mb-4">
@@ -60,7 +99,7 @@ const QuestionCard: React.FC<QuestionCardProp> = ({
           </motion.div>
         </div>
       </div>
-    </>
+    </Fade>
   );
 };
 
