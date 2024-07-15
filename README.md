@@ -47,6 +47,8 @@ Make sure you have Node.js and npm (or yarn) installed on your machine.
    yarn
    ```
 
+4. Create a .env file and copy the content from the .env.example file, then replace the placeholder "superheroapi token" with your actual SuperHeroAPI token.
+
 ### Running the App
 
 1. Start the development server
