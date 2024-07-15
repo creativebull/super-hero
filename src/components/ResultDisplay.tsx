@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { IUserAnswer } from "./QuizContainer";
+import Confetti from "react-confetti";
 import axios from "axios";
+import { motion } from "framer-motion";
+import { TailSpin } from "react-loader-spinner";
 
 interface IHeroProfile {
   id: string;
@@ -53,10 +56,12 @@ interface IResultDisplayProps {
   userAnswers: IUserAnswer[];
 }
 
-const proxyUrl = "https://cors-anywhere.herokuapp.com/";
-
 const ResultDisplay: React.FC<IResultDisplayProps> = ({ userAnswers }) => {
   const [heroProfiles, setHeroProfiles] = useState<IHeroProfile[]>([]);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  console.log(import.meta.env.VITE_API_TOKEN);
 
   useEffect(() => {
     const fetchHeroProfiles = async () => {
@@ -64,12 +69,16 @@ const ResultDisplay: React.FC<IResultDisplayProps> = ({ userAnswers }) => {
         const {
           data: { results },
         } = await axios.get<SuperHeroAPIResponse>(
-          `${proxyUrl}https://superheroapi.com/api/6b50acc3f72acefd5578b622a8ce6374/search/${name}`
+          `https://superheroapi.com/api.php/${
+            import.meta.env.VITE_API_TOKEN
+          }/search/${name}`
         );
         return results[results.length - 1];
       });
       const heroProfileResults = await Promise.all(heroProfilePromises);
       setHeroProfiles(heroProfileResults);
+      setShowConfetti(true);
+      setLoading(false);
     };
 
     fetchHeroProfiles();
@@ -77,110 +86,132 @@ const ResultDisplay: React.FC<IResultDisplayProps> = ({ userAnswers }) => {
 
   return (
     <>
-      {heroProfiles.map((superhero) => (
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex flex-col md:flex-row justify-center items-center">
-            <div className="md:w-1/3">
-              <img
-                src={superhero.image.url}
-                alt={superhero.name}
-                className="rounded-lg shadow-lg mb-4"
-              />
-            </div>
-            <div className="md:w-2/3 md:pl-8">
-              <h1 className="text-3xl font-bold text-gray-800 mb-4">
-                {superhero.name}
-              </h1>
-              <div className="mb-4">
-                <h2 className="text-xl font-semibold text-gray-700 mb-2">
-                  Biography
-                </h2>
-                <p>
-                  <span className="font-semibold">Full Name:</span>{" "}
-                  {superhero.biography["full-name"]}
-                </p>
-                <p>
-                  <span className="font-semibold">Alter Egos:</span>{" "}
-                  {superhero.biography["alter-egos"]}
-                </p>
-                <p>
-                  <span className="font-semibold">Aliases:</span>{" "}
-                  {superhero.biography.aliases.join(", ")}
-                </p>
-                <p>
-                  <span className="font-semibold">Place of Birth:</span>{" "}
-                  {superhero.biography["place-of-birth"]}
-                </p>
-                <p>
-                  <span className="font-semibold">Publisher:</span>{" "}
-                  {superhero.biography.publisher}
-                </p>
-                <p>
-                  <span className="font-semibold">Alignment:</span>{" "}
-                  {superhero.biography.alignment}
-                </p>
-              </div>
-              <div className="mb-4">
-                <h2 className="text-xl font-semibold text-gray-700 mb-2">
-                  Appearance
-                </h2>
-                <p>
-                  <span className="font-semibold">Gender:</span>{" "}
-                  {superhero.appearance.gender}
-                </p>
-                <p>
-                  <span className="font-semibold">Race:</span>{" "}
-                  {superhero.appearance.race}
-                </p>
-                <p>
-                  <span className="font-semibold">Height:</span>{" "}
-                  {superhero.appearance.height[0]} (
-                  {superhero.appearance.height[1]})
-                </p>
-                <p>
-                  <span className="font-semibold">Weight:</span>{" "}
-                  {superhero.appearance.weight[0]} (
-                  {superhero.appearance.weight[1]})
-                </p>
-                <p>
-                  <span className="font-semibold">Eye Color:</span>{" "}
-                  {superhero.appearance["eye-color"]}
-                </p>
-                <p>
-                  <span className="font-semibold">Hair Color:</span>{" "}
-                  {superhero.appearance["hair-color"]}
-                </p>
-              </div>
-              <div className="mb-4">
-                <h2 className="text-xl font-semibold text-gray-700 mb-2">
-                  Work
-                </h2>
-                <p>
-                  <span className="font-semibold">Occupation:</span>{" "}
-                  {superhero.work.occupation}
-                </p>
-                <p>
-                  <span className="font-semibold">Base:</span>{" "}
-                  {superhero.work.base}
-                </p>
-              </div>
-              <div className="mb-4">
-                <h2 className="text-xl font-semibold text-gray-700 mb-2">
-                  Connections
-                </h2>
-                <p>
-                  <span className="font-semibold">Group Affiliation:</span>{" "}
-                  {superhero.connections["group-affiliation"]}
-                </p>
-                <p>
-                  <span className="font-semibold">Relatives:</span>{" "}
-                  {superhero.connections.relatives}
-                </p>
-              </div>
-            </div>
-          </div>
+      {showConfetti && (
+        <Confetti width={window.innerWidth} height={window.innerHeight} />
+      )}
+      {loading ? (
+        <div className="flex justify-center items-center h-screen">
+          <TailSpin color="red" />
         </div>
-      ))}
+      ) : (
+        heroProfiles.map((superhero) => (
+          <motion.div
+            key={superhero.id}
+            className="container mx-auto px-4 py-8"
+            initial={{ scale: 0.7 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-4xl">
+              <div className="md:flex">
+                <div className="md:flex-shrink-0">
+                  <img
+                    className="h-64 w-full object-cover md:w-64"
+                    src={superhero.image.url}
+                    alt={superhero.name}
+                  />
+                </div>
+                <div className="p-8 flex flex-col justify-between">
+                  <div>
+                    <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">
+                      {superhero.biography.publisher}
+                    </div>
+                    <h2 className="block mt-1 text-2xl leading-tight font-semibold text-gray-900">
+                      {superhero.name}
+                    </h2>
+                    <div className="mt-4 text-gray-600">
+                      <div className="mb-2">
+                        <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                          Biography
+                        </h3>
+                        <p>
+                          <span className="font-semibold">Full Name:</span>{" "}
+                          {superhero.biography["full-name"]}
+                        </p>
+                        <p>
+                          <span className="font-semibold">Alter Egos:</span>{" "}
+                          {superhero.biography["alter-egos"]}
+                        </p>
+                        <p>
+                          <span className="font-semibold">Aliases:</span>{" "}
+                          {superhero.biography.aliases.join(", ")}
+                        </p>
+                        <p>
+                          <span className="font-semibold">Place of Birth:</span>{" "}
+                          {superhero.biography["place-of-birth"]}
+                        </p>
+                        <p>
+                          <span className="font-semibold">Alignment:</span>{" "}
+                          {superhero.biography.alignment}
+                        </p>
+                      </div>
+                      <div className="mb-2">
+                        <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                          Appearance
+                        </h3>
+                        <p>
+                          <span className="font-semibold">Gender:</span>{" "}
+                          {superhero.appearance.gender}
+                        </p>
+                        <p>
+                          <span className="font-semibold">Race:</span>{" "}
+                          {superhero.appearance.race}
+                        </p>
+                        <p>
+                          <span className="font-semibold">Height:</span>{" "}
+                          {superhero.appearance.height[0]} (
+                          {superhero.appearance.height[1]})
+                        </p>
+                        <p>
+                          <span className="font-semibold">Weight:</span>{" "}
+                          {superhero.appearance.weight[0]} (
+                          {superhero.appearance.weight[1]})
+                        </p>
+                        <p>
+                          <span className="font-semibold">Eye Color:</span>{" "}
+                          {superhero.appearance["eye-color"]}
+                        </p>
+                        <p>
+                          <span className="font-semibold">Hair Color:</span>{" "}
+                          {superhero.appearance["hair-color"]}
+                        </p>
+                      </div>
+                      <div className="mb-2">
+                        <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                          Work
+                        </h3>
+                        <p>
+                          <span className="font-semibold">Occupation:</span>{" "}
+                          {superhero.work.occupation}
+                        </p>
+                        <p>
+                          <span className="font-semibold">Base:</span>{" "}
+                          {superhero.work.base}
+                        </p>
+                      </div>
+                      <div className="mb-2">
+                        <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                          Connections
+                        </h3>
+                        <p>
+                          <span className="font-semibold">
+                            Group Affiliation:
+                          </span>{" "}
+                          {superhero.connections["group-affiliation"]}
+                        </p>
+                        <p>
+                          <span className="font-semibold">Relatives:</span>{" "}
+                          {superhero.connections.relatives}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        ))
+      )}
     </>
   );
 };
