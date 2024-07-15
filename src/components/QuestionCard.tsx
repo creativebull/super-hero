@@ -76,7 +76,12 @@ const QuestionCard: React.FC<QuestionCardProp> = ({
             {question.options.map(({ id, text, name }) => (
               <div
                 key={id}
-                className="bg-indigo-500 rounded-full px-6 py-3 text-white text-lg flex items-center justify-between"
+                className={`bg-indigo-500 rounded-full px-6 py-3 text-white text-lg flex items-center justify-between`}
+                style={{
+                  backgroundColor:
+                    selectedAnswer === id ? "#38a169" : "#6b46c1",
+                  transition: "background-color 0.3s ease",
+                }}
               >
                 <label htmlFor={`${id}`}>{text}</label>
                 <input
