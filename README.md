@@ -32,13 +32,12 @@ Make sure you have Node.js and npm (or yarn) installed on your machine.
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/creativebull/superhero-quiz.git
+   git clone https://github.com/creativebull/super-hero.git
    ```
-   Replace `your-username` with your GitHub username or the appropriate repository URL.
 
 2. Navigate into the project directory
    ```sh
-   cd superhero-quiz
+   cd super-hero
    ```
 
 3. Install dependencies
