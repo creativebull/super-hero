@@ -61,8 +61,6 @@ const ResultDisplay: React.FC<IResultDisplayProps> = ({ userAnswers }) => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  console.log(import.meta.env.VITE_API_TOKEN);
-
   useEffect(() => {
     const fetchHeroProfiles = async () => {
       const heroProfilePromises = userAnswers.map(async ({ name }) => {
